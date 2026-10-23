@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hệ Thống Quản Lý Ngân Hàng</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-slate-50 min-h-screen text-slate-800">
+
+<!-- Header -->
+<header class="bg-indigo-700 text-white shadow-md">
+    <div class="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
+        <h1 class="text-xl font-bold flex items-center gap-2">
+            <i class="fa-solid fa-building-columns"></i> Banking Dashboard
+        </h1>
+        <a href="/swagger-ui/index.html" target="_blank" class="text-sm bg-indigo-600 hover:bg-indigo-800 px-3 py-1.5 rounded transition">
+            <i class="fa-solid fa-code"></i> Swagger API
+        </a>
+    </div>
+</header>
+
+<main class="max-w-6xl mx-auto px-4 py-8 grid grid-cols-1 md:grid-cols-2 gap-8">
+
+    <!-- Form 1: Tạo khách hàng -->
+    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+        <h2 class="text-lg font-semibold mb-4 text-indigo-700 flex items-center gap-2">
+            <i class="fa-solid fa-user-plus"></i> Tạo Khách Hàng
+        </h2>
+        <form id="formKhachHang" class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium mb-1">Mã khách hàng</label>
+                <input type="text" id="kh_ma" required placeholder="VD: KH001" class="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+            </div>
+            <div>
+                <label class="block text-sm font-medium mb-1">Họ và tên</label>
+                <input type="text" id="kh_ten" required placeholder="VD: Nguyễn Văn A" class="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+            </div>
+            <div>
+                <label class="block text-sm font-medium mb-1">Số điện thoại</label>
+                <input type="text" id="kh_sdt" required placeholder="VD: 0987654321" class="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+            </div>
+            <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 rounded-lg transition text-sm">
+                Tạo khách hàng
+            </button>
+        </form>
+    </div>
+
+    <!-- Form 2: Mở tài khoản -->
+    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+        <h2 class="text-lg font-semibold mb-4 text-indigo-700 flex items-center gap-2">
+            <i class="fa-solid fa-credit-card"></i> Mở Tài Khoản Mới
+        </h2>
+        <form id="formTaiKhoan" class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium mb-1">Số tài khoản</label>
+                <input type="text" id="tk_stk" required placeholder="VD: 1029384756" class="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+            </div>
+            <div>
+                <label class="block text-sm font-medium mb-1">Mã khách hàng sở hữu</label>
+                <input type="text" id="tk_makh" required placeholder="VD: KH001" class="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium mb-1">Số dư ban đầu (VND)</label>
+                    <input type="number" id="tk_sodu" required min="0" value="50000" class="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1">Loại tài khoản</label>
+                    <select id="tk_loai" class="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+                        <option value="THANH_TOAN">Thanh toán</option>
+                        <option value="TIET_KIEM">Tiết kiệm</option>
+                    </select>
+                </div>
+            </div>
+            <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 rounded-lg transition text-sm">
+                Mở tài khoản
+            </button>
+        </form>
+    </div>
+
+    <!-- Form 3: Nạp tiền & Chuyển tiền -->
+    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+        <div class="flex border-b mb-4">
+            <button id="tabTransferBtn" type="button" class="pb-2 font-medium text-sm text-indigo-600 border-b-2 border-indigo-600 mr-4">Chuyển Tiền</button>
+            <button id="tabDepositBtn" type="button" class="pb-2 font-medium text-sm text-slate-500 hover:text-indigo-600">Nạp Tiền</button>
+        </div>
+
+        <!-- Form Chuyển tiền -->
+        <form id="formChuyenTien" class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium mb-1">Số tài khoản nguồn (Gửi)</label>
+                <input type="text" id="ct_gui" required placeholder="Số tài khoản chuyển đi" class="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+            </div>
+            <div>
+                <label class="block text-sm font-medium mb-1">Số tài khoản đích (Nhận)</label>
+                <input type="text" id="ct_nhan" required placeholder="Số tài khoản thụ hưởng" class="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+            </div>
+            <div>
+                <label class="block text-sm font-medium mb-1">Số tiền chuyển (VND)</label>
+                <input type="number" id="ct_tien" required min="1000" placeholder="Tối thiểu 1,000" class="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+            </div>
+            <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2 rounded-lg transition text-sm">
+                Xác nhận chuyển tiền
+            </button>
+        </form>
+
+        <!-- Form Nạp tiền -->
+        <form id="formNapTien" class="space-y-4 hidden">
+            <div>
+                <label class="block text-sm font-medium mb-1">Số tài khoản cần nạp</label>
+                <input type="text" id="nt_stk" placeholder="Nhập số tài khoản" class="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+            </div>
+            <div>
+                <label class="block text-sm font-medium mb-1">Số tiền nạp (VND)</label>
+                <input type="number" id="nt_tien" min="1000" placeholder="Tối thiểu 1,000" class="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+            </div>
+            <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2 rounded-lg transition text-sm">
+                Xác nhận nạp tiền
+            </button>
+        </form>
+    </div>
+
+    <!-- Section 4: Lịch sử & Thống kê -->
+    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+        <h2 class="text-lg font-semibold mb-4 text-indigo-700 flex items-center gap-2">
+            <i class="fa-solid fa-clock-rotate-left"></i> Tra Cứu & Thống Kê
+        </h2>
+        <div class="flex gap-2 mb-4">
+            <input type="text" id="ls_stk" placeholder="Nhập STK cần xem" class="flex-1 border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+            <button id="btnXemLichSu" class="bg-slate-800 hover:bg-slate-900 text-white px-4 py-2 rounded-lg text-sm font-medium transition">
+                Tra cứu
+            </button>
+        </div>
+
+        <!-- Bảng giao dịch -->
+        <div class="overflow-x-auto max-h-64 border rounded-lg">
+            <table class="w-full text-left text-xs border-collapse">
+                <thead class="bg-slate-100 text-slate-600 sticky top-0">
+                <tr>
+                    <th class="p-2 border-b">Mã GD</th>
+                    <th class="p-2 border-b">Loại</th>
+                    <th class="p-2 border-b">Số tiền</th>
+                    <th class="p-2 border-b">Trạng thái</th>
+                </tr>
+                </thead>
+                <tbody id="lichSuTableBody" class="divide-y divide-slate-100">
+                <tr>
+                    <td colspan="4" class="p-4 text-center text-slate-400">Chưa có dữ liệu tra cứu</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</main>
+
+<!-- Modal Thông báo kết quả -->
+<div id="toast" class="fixed bottom-6 right-6 hidden bg-slate-900 text-white px-5 py-3 rounded-lg shadow-xl text-sm flex items-center gap-3 transition">
+    <span id="toastMsg"></span>
+</div>
+
+<script>
+    const API_BASE = '/api/v1';
+
+    function showToast(msg, isSuccess = true) {
+        const toast = document.getElementById('toast');
+        const toastMsg = document.getElementById('toastMsg');
+        toastMsg.innerText = msg;
+        toast.className = `fixed bottom-6 right-6 px-5 py-3 rounded-lg shadow-xl text-sm flex items-center gap-3 transition ${isSuccess ? 'bg-emerald-600 text-white' : 'bg-red-600 text-white'}`;
+        toast.classList.remove('hidden');
+        setTimeout(() => toast.classList.add('hidden'), 3500);
+    }
+
+    // Chuyển Tab Nạp/Chuyển tiền
+    const tabTransferBtn = document.getElementById('tabTransferBtn');
+    const tabDepositBtn = document.getElementById('tabDepositBtn');
+    const formChuyenTien = document.getElementById('formChuyenTien');
+    const formNapTien = document.getElementById('formNapTien');
+
+    tabTransferBtn.onclick = () => {
+        tabTransferBtn.className = "pb-2 font-medium text-sm text-indigo-600 border-b-2 border-indigo-600 mr-4";
+        tabDepositBtn.className = "pb-2 font-medium text-sm text-slate-500 hover:text-indigo-600";
+        formChuyenTien.classList.remove('hidden');
+        formNapTien.classList.add('hidden');
+    };
+
+    tabDepositBtn.onclick = () => {
+        tabDepositBtn.className = "pb-2 font-medium text-sm text-indigo-600 border-b-2 border-indigo-600";
+        tabTransferBtn.className = "pb-2 font-medium text-sm text-slate-500 hover:text-indigo-600 mr-4";
+        formNapTien.classList.remove('hidden');
+        formChuyenTien.classList.add('hidden');
+    };
+
+    // 1. Tạo Khách Hàng
+    document.getElementById('formKhachHang').onsubmit = async (e) => {
+        e.preventDefault();
+        const payload = {
+            maKhachHang: document.getElementById('kh_ma').value,
+            hoTen: document.getElementById('kh_ten').value,
+            soDienThoai: document.getElementById('kh_sdt').value
+        };
+        try {
+            const res = await fetch(`${API_BASE}/khach-hang`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const data = await res.json();
+            if (res.ok && data.success) {
+                showToast(data.message);
+                e.target.reset();
+            } else {
+                showToast(data.message || 'Lỗi khi tạo khách hàng', false);
+            }
+        } catch (err) {
+            showToast('Lỗi kết nối máy chủ!', false);
+        }
+    };
+
+    // 2. Mở Tài Khoản
+    document.getElementById('formTaiKhoan').onsubmit = async (e) => {
+        e.preventDefault();
+        const payload = {
+            soTaiKhoan: document.getElementById('tk_stk').value,
+            maKhachHang: document.getElementById('tk_makh').value,
+            soDuBanDau: parseFloat(document.getElementById('tk_sodu').value),
+            loaiTaiKhoan: document.getElementById('tk_loai').value
+        };
+        try {
+            const res = await fetch(`${API_BASE}/tai-khoan`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const data = await res.json();
+            if (res.ok && data.success) {
+                showToast(`Tạo thành công tài khoản: ${data.data.soTaiKhoan}`);
+                e.target.reset();
+            } else {
+                showToast(data.message || 'Lỗi khi mở tài khoản', false);
+            }
+        } catch (err) {
+            showToast('Lỗi kết nối máy chủ!', false);
+        }
+    };
+
+    // 3. Chuyển Tiền
+    formChuyenTien.onsubmit = async (e) => {
+        e.preventDefault();
+        const payload = {
+            stkGui: document.getElementById('ct_gui').value,
+            stkNhan: document.getElementById('ct_nhan').value,
+            soTien: parseFloat(document.getElementById('ct_tien').value)
+        };
+        try {
+            const res = await fetch(`${API_BASE}/giao-dich/chuyen-tien`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const data = await res.json();
+            if (res.ok && data.success) {
+                showToast(`Chuyển tiền thành công! Số dư còn lại: ${Number(data.data.soDu).toLocaleString()} VND`);
+                e.target.reset();
+            } else {
+                showToast(data.message || 'Chuyển tiền thất bại!', false);
+            }
+        } catch (err) {
+            showToast('Lỗi kết nối máy chủ!', false);
+        }
+    };
+
+    // 4. Nạp Tiền
+    formNapTien.onsubmit = async (e) => {
+        e.preventDefault();
+        const payload = {
+            soTaiKhoan: document.getElementById('nt_stk').value,
+            soTien: parseFloat(document.getElementById('nt_tien').value)
+        };
+        try {
+            const res = await fetch(`${API_BASE}/giao-dich/nap-tien`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const data = await res.json();
+            if (res.ok && data.success) {
+                showToast(`Nạp thành công! Số dư mới: ${Number(data.data.soDu).toLocaleString()} VND`);
+                e.target.reset();
+            } else {
+                showToast(data.message || 'Nạp tiền thất bại!', false);
+            }
+        } catch (err) {
+            showToast('Lỗi kết nối máy chủ!', false);
+        }
+    };
+
+    // 5. Xem Lịch Sử Giao Dịch
+    document.getElementById('btnXemLichSu').onclick = async () => {
+        const stk = document.getElementById('ls_stk').value.trim();
+        if (!stk) {
+            showToast('Vui lòng nhập số tài khoản!', false);
+            return;
+        }
+        try {
+            const res = await fetch(`${API_BASE}/giao-dich/lich-su/${stk}`);
+            const data = await res.json();
+            const tbody = document.getElementById('lichSuTableBody');
+            tbody.innerHTML = '';
+
+            if (res.ok && data.data && data.data.length > 0) {
+                data.data.forEach(gd => {
+                    // Phân biệt màu sắc: SUCCESS màu xanh, FAILED màu đỏ
+                    const isSuccess = gd.trangThai === 'SUCCESS';
+                    const statusBadge = isSuccess
+                        ? `<span class="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded text-[11px] font-semibold">SUCCESS</span>`
+                        : `<span class="bg-red-100 text-red-700 px-2 py-0.5 rounded text-[11px] font-semibold">FAILED</span>`;
+
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                            <td class="p-2 border-b font-mono font-medium">${gd.refNo}</td>
+                            <td class="p-2 border-b"><span class="px-2 py-0.5 rounded text-[10px] ${gd.loaiGiaoDich === 'NAP_TIEN' ? 'bg-blue-100 text-blue-700' : 'bg-purple-100 text-purple-700'}">${gd.loaiGiaoDich}</span></td>
+                            <td class="p-2 border-b font-semibold text-slate-700">${Number(gd.soTien).toLocaleString()} đ</td>
+                            <td class="p-2 border-b">${statusBadge}</td>
+                        `;
+                    tbody.appendChild(tr);
+                });
+            } else {
+                tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-400">Không tìm thấy giao dịch nào</td></tr>`;
+            }
+        } catch (err) {
+            showToast('Không thể lấy lịch sử giao dịch!', false);
+        }
+    };
+</script>
+</body>
+</html>
