@@ -1,8 +1,6 @@
 package com.example.Spring.service;
 
-import com.example.Spring.dto.ChuyenTienRequest;
-import com.example.Spring.dto.DepositRequest;
-import com.example.Spring.dto.TaiKhoanResponse;
+import com.example.Spring.dto.*;
 import com.example.Spring.entity.GiaoDichEntity;
 import com.example.Spring.entity.TaiKhoanEntity;
 import com.example.Spring.exception.InsufficientBalanceException;
@@ -39,9 +37,27 @@ public class ChuyenTienService {
         this.lichSuSoDuService = lichSuSoDuService;
     }
 
-    public GiaoDichEntity timTheoRefNo(String refNo) {
-        return giaoDichRepository.findByRefNo(refNo)
-                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy giao dịch với mã: " + refNo));
+    public GiaoDichDetailResponse timChiTietGiaoDich(String refNo,String soTaiKhoan){
+        GiaoDichEntity gd = giaoDichRepository.findByRefNo(refNo)
+                .orElseThrow(()-> new ResourceNotFoundException("GiaoDich","refNo",refNo));
+
+        boolean laNguoiGui = gd.getStkGui() != null && gd.getStkGui().equalsIgnoreCase(soTaiKhoan);
+        boolean laNguoiNhan = gd.getStkNhan() != null && gd.getStkNhan().equalsIgnoreCase(soTaiKhoan);
+
+        if (!laNguoiGui && !laNguoiNhan) {
+            throw new IllegalArgumentException("Bạn không có quyền xem thông tin!");
+        }
+
+        return  new GiaoDichDetailResponse(
+                gd.getRefNo(),
+                gd.getStkGui(),
+                gd.getStkNhan(),
+                gd.getSoTien(),
+                gd.getLoaiGiaoDich(),
+                gd.getTrangThai(),
+                gd.getThoiGian()
+        );
+
     }
 
     @Transactional
@@ -56,15 +72,13 @@ public class ChuyenTienService {
 
         try {
             TaiKhoanEntity tkGui = taiKhoanRepository.findById(request.getStkGui())
-                    .orElseThrow(() -> new ResourceNotFoundException("Tài khoản gửi không tồn tại!"));
+                    .orElseThrow(() -> new ResourceNotFoundException("TaiKhoan", "soTaiKhoan", request.getStkGui()));
 
             TaiKhoanEntity tkNhan = taiKhoanRepository.findById(request.getStkNhan())
-                    .orElseThrow(() -> new ResourceNotFoundException("Tài khoản nhận không tồn tại!"));
+                    .orElseThrow(() -> new ResourceNotFoundException("TaiKhoan", "soTaiKhoan", request.getStkNhan()));
 
             if (tkGui.getSoDu().compareTo(request.getSoTien()) < 0) {
-                throw new InsufficientBalanceException(
-                        String.format("Số dư không đủ! Hiện tại: %s, Cần chuyển: %s", tkGui.getSoDu(), request.getSoTien())
-                );
+                throw new InsufficientBalanceException(tkGui.getSoTaiKhoan(),tkGui.getSoDu(),request.getSoTien());
             }
             BigDecimal soDuTruocGui = tkGui.getSoDu();
             BigDecimal soDuTruocNhan = tkNhan.getSoDu();
@@ -131,8 +145,23 @@ public class ChuyenTienService {
         }
     }
 
-    public List<GiaoDichEntity> layLichSuGiaoDich(String soTaiKhoan) {
-        return giaoDichRepository.findByStkGuiOrStkNhan(soTaiKhoan, soTaiKhoan);
+    public List<GiaoDichResponse> layLichSuGiaoDich(String soTaiKhoan) {
+        if (!taiKhoanRepository.existsById(soTaiKhoan)) {
+            throw new ResourceNotFoundException("TaiKhoan", "soTaiKhoan", soTaiKhoan);
+        }
+
+        return giaoDichRepository.findByStkGuiOrStkNhan(soTaiKhoan, soTaiKhoan)
+                .stream()
+                .map(gd -> new GiaoDichResponse(
+                        gd.getRefNo(),
+                        gd.getStkGui(),
+                        gd.getStkNhan(),
+                        gd.getSoTien(),
+                        gd.getLoaiGiaoDich(),
+                        gd.getTrangThai(),
+                        gd.getThoiGian()
+                ))
+                .toList();
     }
 
     public BigDecimal tinhTongTienThanhCong() {

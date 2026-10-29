@@ -56,7 +56,7 @@ public class TaiKhoanService {
         }
 
         KhachHangEntity kh = khachHangRepository.findById(request.getMaKhachHang())
-                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy khách hàng: " + request.getMaKhachHang()));
+                .orElseThrow(() -> new ResourceNotFoundException("KhachHang", "maKhachHang", request.getMaKhachHang()));
 
         TaiKhoanEntity tk = new TaiKhoanEntity(
                 request.getSoTaiKhoan(),

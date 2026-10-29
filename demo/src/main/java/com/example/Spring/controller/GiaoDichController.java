@@ -36,15 +36,17 @@ public class GiaoDichController {
     }
 
     @GetMapping("/lich-su/{soTaiKhoan}")
-    public ResponseEntity<Api<List<GiaoDichEntity>>> xemLichSu(@PathVariable String soTaiKhoan) {
-        List<GiaoDichEntity> danhSach = chuyenTienService.layLichSuGiaoDich(soTaiKhoan);
+    public ResponseEntity<Api<List<GiaoDichResponse>>> xemLichSu(@PathVariable String soTaiKhoan) {
+        List<GiaoDichResponse> danhSach = chuyenTienService.layLichSuGiaoDich(soTaiKhoan);
         return ResponseEntity.ok(new Api<>(true, "Lấy lịch sử thành công!", danhSach));
     }
 
-    @GetMapping("/tim-kiem/{refNo}")
-    public ResponseEntity<Api<GiaoDichEntity>> timTheoRefNo(@PathVariable String refNo) {
-        GiaoDichEntity gd = chuyenTienService.timTheoRefNo(refNo);
-        return ResponseEntity.ok(new Api<>(true, "Tìm thấy giao dịch!", gd));
+    @GetMapping("/tim -kiem/{refNo}")
+    public ResponseEntity<Api<GiaoDichDetailResponse>> timTheoRefNo(
+            @PathVariable String refNo,
+            @RequestParam String soTaiKhoan) {
+        GiaoDichDetailResponse ketQua = chuyenTienService.timChiTietGiaoDich(refNo,soTaiKhoan);
+        return ResponseEntity.ok(new Api<>(true, "Tìm thấy giao dịch!", ketQua));
     }
 
     @GetMapping("/trang-thai")
